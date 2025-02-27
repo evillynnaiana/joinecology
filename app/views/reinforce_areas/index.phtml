@@ -1,0 +1,57 @@
+<?php use App\Utils\DateUtils; ?>
+
+<table class="table">
+    <thead>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Registrado por</th>
+        <th>Status</th>
+        <th>Ações</th>
+        <th>Analisado por</th>
+    </thead>
+    <tbody>
+        <?php foreach ($areas as $area) : ?>
+            <?php $approval = $area->getLatestApproval(); ?>
+            <tr>
+                <td>#<?= $area->id ?></td>
+                <td><?= $area->title ?></td>
+                <td><?= $area->user->name ?></td>
+                <td>
+                    <?php if ($this->current_user->isAdmin()): ?>
+                    <form action="<?= route('reinforce.areas.updateStatus', ['id' => $area->id]) ?>" method="POST">
+                        <select name="status" class="form-select" onchange="toggleSaveButton(this, <?= $area->id ?>, <?= $area->status ?>)">
+                            <?php foreach (\App\Utils\EnumUtils::getEnumOptions(\App\Enums\AreaStatus::class, 'getStatus') as $value => $label) : ?>
+                                <option value="<?= $value ?>" <?= $area->status == $value ? 'selected' : '' ?>><?= $label ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <td>
+                            <a href="<?= route('areas.show', ['id' => $area->id]) ?>" class="btn btn-link pe-0">
+                                <i class="bi bi-clock-history"></i>
+                            </a>
+                            <button type="submit" class="btn btn-link d-none" id="save-button-<?= $area->id ?>">
+                                <i class="bi bi-floppy"></i>
+                            </button>
+                        </td>
+                    </form>
+                    <?php else: ?>
+                        <?= $area->getStatus() ?>
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <?= $approval ? $approval->user->name . ' em ' . DateUtils::format(DateUtils::convertToUserTimezone($approval->created_at)) : 'Não analisado' ?>
+                </td>
+                <?php if (!$this->current_user->isAdmin()): ?>
+                <td>
+                    <a href="<?= route('areas.show', ['id' => $area->id]) ?>" class="btn btn-link pe-0">
+                        <i class="bi bi-clock-history"></i>
+                    </a>
+                </td>
+                <?php endif; ?>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
+<?php $paginator->renderPagesNavigation(); ?>
+
+<script src="/assets/js/reinforce_areas/index.js"></script>

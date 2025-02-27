@@ -1,0 +1,16 @@
+<table class="table">
+    <thead>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Registrado por</th>
+    </thead>
+    <tbody>
+        <?php foreach ($areas as $area) : ?>
+            <tr>
+                <td>#<?= $area->id ?></td>
+                <td><?= $area->title ?></td>
+                <td><?= $area->user->name ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>

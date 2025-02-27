@@ -1,0 +1,46 @@
+<!-- <div class="row">
+    <div class="col-8 mb-3">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Procurar areas" aria-label="Recipient's username" aria-describedby="button-addon2">
+            <button class="btn btn-outline-primary" type="button">
+                Pesquisar...
+            </button>
+        </div>
+    </div>
+</div> -->
+
+<table class="table">
+    <thead>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Status</th>
+        <th></th>
+    </thead>
+    <tbody>
+        <?php foreach ($areas as $area) : ?>
+            <tr>
+                <td>#<?= $area->id ?></td>
+                <td><?= $area->title ?></td>
+                <td><?= $area->getStatus() ?></td>
+                <td>
+                    <div class="d-flex justify-content-end">
+                        <a href="<?= route('areas.show', ['id' => $area->id]) ?>" class="btn btn-link pe-0">
+                            <i class="bi bi-plus-circle"></i>
+                        </a>
+                        <?php if ($area->getStatus() === 'Pendente') : ?>
+                            <a href="<?= route('areas.edit', ['id' => $area->id]) ?>" class="btn btn-link pe-0">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <form action="<?= route('areas.destroy', ['id' => $area->id]) ?>" method="POST" class="m-0">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn btn-link pe-0"><i class="bi bi-archive"></i></button>
+                            </form>
+                        <?php endif; ?>
+                    </div>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
+<?php $paginator->renderPagesNavigation(); ?>

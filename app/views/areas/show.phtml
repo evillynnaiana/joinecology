@@ -1,0 +1,57 @@
+<?php
+
+use App\Utils\DateUtils;
+
+?>
+<div class="card mb-5">
+    <div class="card-body">
+        <h5><?= $area->title ?></h5>
+        <p><strong>Rua:</strong> <?= $area->street ?></p>
+        <p><strong>Cidade:</strong> <?= $area->city ?></p>
+        <p><strong>Estado:</strong> <?= $area->state ?></p>
+        <p><strong>CEP:</strong> <?= $area->zipcode ?></p>
+        <p><strong>Número:</strong> <?= $area->number ?></p>
+    </div>
+</div>
+<?php if (!$this->current_user->isAdmin() && $area->getStatus() !== 'Aprovada' && $area->getStatus() !== 'Reprovada') : ?>
+    <form id="formAdicionarFotoArea" action="<?= route('areas.uploadImage', ['id' => $area->id]) ?>" method="POST" enctype="multipart/form-data">
+        <label for="areaImage" id="adicionarFotoArea" class="btn btn-primary">Adicionar Foto</label>
+        <input type="file" name="area_image" class="d-none" id="areaImage" required>
+    </form>
+<?php endif; ?>
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalLabel">Pré-visualização da Imagem</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img id="imagePreview" src="#" alt="Pré-visualização da imagem" style="max-width: 100%;">
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary d-none" id="submitImage">Enviar imagem</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4 class="mb-3">Histórico de Imagens</h4>
+<?php if (!empty($timeline)): ?>
+    <ul class="timeline">
+        <?php foreach (array_reverse($timeline) as $registro): ?>
+            <li>
+                <div class="timeline-register">
+                    <p><strong>Data:</strong> <?= DateUtils::format(DateUtils::convertToUserTimezone($registro->created_at)) ?></p>
+                    <p><strong>Imagem:</strong></p>
+                    <img src="/assets/uploads/areas/<?= $area->id ?>/history/<?= $registro->image_name ?>" alt="Imagem da área">
+                </div>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+<?php else: ?>
+    <p>Nenhuma imagem cadastrada.</p>
+<?php endif; ?>
+
+<script src="/assets/js/areas/imagePreview.js"></script>
